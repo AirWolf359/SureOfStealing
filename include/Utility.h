@@ -6,7 +6,7 @@ public:
     inline static RE::TESObjectREFR*  last_activation{};
     inline static RE::TESGlobal*      immersive_interactions_global{};
     inline static bool                immersive_interactions_present{};
-    inline static RE::ObjectRefHandle crosshair_ref{};
+    inline static RE::NiPointer<RE::TESObjectREFR> crosshair_ref{};
 
     static void InitGlobal() noexcept
     {

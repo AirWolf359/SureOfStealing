@@ -37,7 +37,7 @@ namespace Hooks
                     if (const auto book{ a_object->GetBaseObject()->As<RE::TESObjectBOOK>() }; !book->IsRead())
                         return func(a_this, a_object, a_count, a_arg3, a_playSound);
                 }
-                const auto crosshair{ Utility::crosshair_ref.get() };
+                const auto& crosshair{ Utility::crosshair_ref };
                 if (!crosshair || crosshair->GetFormID() != form_id) {
                     return func(a_this, a_object, a_count, a_arg3, a_playSound);
                 }
