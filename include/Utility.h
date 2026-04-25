@@ -3,7 +3,7 @@
 class Utility : public Singleton<Utility>
 {
 public:
-    inline static RE::TESObjectREFR*  last_activation{};
+    inline static RE::ObjectRefHandle  last_activation{};
     inline static RE::TESGlobal*      immersive_interactions_global{};
     inline static bool                immersive_interactions_present{};
     inline static RE::NiPointer<RE::TESObjectREFR> crosshair_ref{};
