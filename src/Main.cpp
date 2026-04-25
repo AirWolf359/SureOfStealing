@@ -8,6 +8,7 @@ void Listener(SKSE::MessagingInterface::Message* message) noexcept
     if (message->type == SKSE::MessagingInterface::kDataLoaded) {
         Settings::LoadSettings();
         Utility::InitGlobal();
+        CrosshairRefHandler::Register();
         Hooks::Install();
     }
 }

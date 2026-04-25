@@ -37,6 +37,10 @@ namespace Hooks
                     if (const auto book{ a_object->GetBaseObject()->As<RE::TESObjectBOOK>() }; !book->IsRead())
                         return func(a_this, a_object, a_count, a_arg3, a_playSound);
                 }
+                const auto crosshair{ Utility::crosshair_ref.get() };
+                if (!crosshair || crosshair->GetFormID() != form_id) {
+                    return func(a_this, a_object, a_count, a_arg3, a_playSound);
+                }
                 if (Utility::last_activation) {
                     if (a_object->GetFormID() == Utility::last_activation->GetFormID()) {
                         logger::debug("Allowing steal for {} (0x{:x})", name, form_id);
@@ -78,6 +82,10 @@ namespace Hooks
     bool ActivateFlora::Thunk(RE::TESFlora* a_this, RE::TESObjectREFR* a_targetRef, RE::TESObjectREFR* a_activatorRef, std::uint8_t a_arg3, RE::TESBoundObject* a_object,
                               std::int32_t a_targetCount) noexcept
     {
+        if (!a_targetRef || !a_activatorRef) {
+            return func(a_this, a_targetRef, a_activatorRef, a_arg3, a_object, a_targetCount);
+        }
+
         const auto name{ a_targetRef->GetName() };
 
         if ("Coin Purse"sv.compare(name)) {
@@ -130,6 +138,10 @@ namespace Hooks
     bool ActivateFurniture::Thunk(RE::TESFurniture* a_this, RE::TESObjectREFR* a_targetRef, RE::TESObjectREFR* a_activatorRef, std::uint8_t a_arg3, RE::TESBoundObject* a_object,
                                   std::int32_t a_targetCount) noexcept
     {
+        if (!a_targetRef || !a_activatorRef) {
+            return func(a_this, a_targetRef, a_activatorRef, a_arg3, a_object, a_targetCount);
+        }
+
         const auto name{ a_targetRef->GetName() };
 
         if ("Bench"sv.compare(name) && "Chair"sv.compare(name)) {
@@ -180,6 +192,10 @@ namespace Hooks
     bool ActivateContainer::Thunk(RE::TESObjectCONT* a_this, RE::TESObjectREFR* a_targetRef, RE::TESObjectREFR* a_activatorRef, std::uint8_t a_arg3, RE::TESBoundObject* a_object,
                                   std::int32_t a_targetCount) noexcept
     {
+        if (!a_activatorRef || !a_targetRef) {
+            return func(a_this, a_targetRef, a_activatorRef, a_arg3, a_object, a_targetCount);
+        }
+
         if (const auto player{ RE::PlayerCharacter::GetSingleton() }; a_activatorRef->IsPlayerRef()) {
             if (player->Is3DLoaded() && !player->IsSneaking()) {
                 const auto name{ a_targetRef->GetName() };

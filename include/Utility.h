@@ -3,9 +3,10 @@
 class Utility : public Singleton<Utility>
 {
 public:
-    inline static RE::TESObjectREFR* last_activation{};
-    inline static RE::TESGlobal*     immersive_interactions_global{};
-    inline static bool               immersive_interactions_present{};
+    inline static RE::TESObjectREFR*  last_activation{};
+    inline static RE::TESGlobal*      immersive_interactions_global{};
+    inline static bool                immersive_interactions_present{};
+    inline static RE::ObjectRefHandle crosshair_ref{};
 
     static void InitGlobal() noexcept
     {
@@ -21,5 +22,17 @@ public:
             return;
         }
         logger::info("Immersive Interactions not present");
+    }
+};
+
+class CrosshairRefHandler : public EventSingleton<CrosshairRefHandler, SKSE::CrosshairRefEvent>
+{
+public:
+    RE::BSEventNotifyControl ProcessEvent(const SKSE::CrosshairRefEvent* a_event, RE::BSTEventSource<SKSE::CrosshairRefEvent>*) override
+    {
+        if (a_event) {
+            Utility::crosshair_ref = a_event->crosshairRef;
+        }
+        return RE::BSEventNotifyControl::kContinue;
     }
 };
