@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 env:
-  VCPKG_COMMIT_ID: 89dd0f4d241136b843fb55813b2f0fa6448c204d
+  VCPKG_COMMIT_ID: ee12231b20c95013c6638d845d04c91559a1d1ff
 
 jobs:
   test-build:

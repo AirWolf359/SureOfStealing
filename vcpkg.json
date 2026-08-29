@@ -3,11 +3,20 @@
   "name": "sure-of-stealing",
   "version-semver": "1.1.4",
   "dependencies": [
-    "fmt",
-    "spdlog",
+    {
+      "name": "fmt",
+      "version>=": "12.1.0"
+    },
+    {
+      "name": "spdlog",
+      "version>=": "1.16.0"
+    },
+    {
+      "name": "directxtk",
+      "version>=": "2025-10-27"
+    },
     "rapidcsv",
     "simpleini",
-    "directxtk",
     "openvr"
   ],
   "license": "GPL-3.0-or-later",
@@ -15,7 +24,7 @@
     "default-registry": {
       "kind": "git",
       "repository": "https://github.com/microsoft/vcpkg",
-      "baseline": "c591ac6466a55ef0a05a3d56bb1489ca36e50102"
+      "baseline": "ee12231b20c95013c6638d845d04c91559a1d1ff"
     }
   }
 }
