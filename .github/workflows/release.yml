@@ -5,6 +5,11 @@ on:
     tags:
       - "v*"
   workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing tag to build and attach assets to (e.g. v1.2.0)"
+        required: true
+        type: string
 
 permissions:
   contents: write
@@ -15,14 +20,20 @@ env:
 
 jobs:
   release:
-    # Only ever run against a version tag — a manual dispatch from a branch
-    # would otherwise create a release named after the branch.
-    if: startsWith(github.ref, 'refs/tags/v')
+    # Only ever run against a version tag — either pushed, or named explicitly
+    # via workflow_dispatch. A dispatch with no tag would otherwise build the
+    # branch and create a release named after it.
+    if: >-
+      startsWith(github.ref, 'refs/tags/v') ||
+      (github.event_name == 'workflow_dispatch' && inputs.tag != '')
     runs-on: windows-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v7
         with:
+          # On a tag push this is the tag itself; on a dispatch it is the tag
+          # named in the input, so the build always matches the release.
+          ref: ${{ inputs.tag || github.ref_name }}
           submodules: recursive
 
       # Import the VS developer environment (cl, ninja deps, INCLUDE/LIB)
@@ -64,21 +75,30 @@ jobs:
       - name: Package mod archive
         shell: pwsh
         run: |
-          $version = "${{ github.ref_name }}"
+          $version = "${{ inputs.tag || github.ref_name }}"
           New-Item -ItemType Directory -Force stage/SKSE/Plugins | Out-Null
           Copy-Item contrib/PluginRelease/skse/plugins/SureOfStealing.dll stage/SKSE/Plugins/
           Copy-Item contrib/PluginRelease/skse/plugins/SureOfStealing.ini stage/SKSE/Plugins/
           Compress-Archive -Path stage/* -DestinationPath "SureOfStealing-$version.zip"
           Compress-Archive -Path contrib/PluginRelease/skse/plugins/SureOfStealing.pdb -DestinationPath "SureOfStealing-$version-pdb.zip"
 
-      - name: Create GitHub Release
+      - name: Create or update GitHub Release
         shell: pwsh
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          $version = "${{ github.ref_name }}"
-          gh release create $version `
-            "SureOfStealing-$version.zip#Mod archive (install with a mod manager)" `
-            "SureOfStealing-$version-pdb.zip#Debug symbols (for crash log symbolication)" `
-            --title "Sure of Stealing $version" `
-            --generate-notes
+          $version = "${{ inputs.tag || github.ref_name }}"
+          $archive = "SureOfStealing-$version.zip#Mod archive (install with a mod manager)"
+          $symbols = "SureOfStealing-$version-pdb.zip#Debug symbols (for crash log symbolication)"
+
+          # The tag may already have a release attached — publishing from the
+          # GitHub UI creates the tag that triggers this run. Attach the built
+          # assets in that case rather than failing on "already exists".
+          gh release view $version *> $null
+          if ($LASTEXITCODE -eq 0) {
+            Write-Host "Release $version already exists - uploading assets."
+            gh release upload $version $archive $symbols --clobber
+          } else {
+            Write-Host "Creating release $version."
+            gh release create $version $archive $symbols --title "Sure of Stealing $version" --generate-notes
+          }
