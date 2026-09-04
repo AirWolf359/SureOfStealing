@@ -3,7 +3,7 @@ message("Using toolchain file ${CMAKE_TOOLCHAIN_FILE}.")
 
 project(
   SureOfStealing
-  VERSION 1.1.4
+  VERSION 1.2.0
   LANGUAGES CXX
 )
 set(CMAKE_CXX_STANDARD 23)
