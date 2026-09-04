@@ -3,9 +3,15 @@ message("Using toolchain file ${CMAKE_TOOLCHAIN_FILE}.")
 
 project(
   SureOfStealing
-  VERSION 1.1.4
+  VERSION 1.2.0
+  DESCRIPTION "Requires a second interaction before taking an owned item, preventing accidental theft"
   LANGUAGES CXX
 )
+
+# Display name for the DLL version resource (ProductName); PROJECT_DESCRIPTION
+# above supplies FileDescription. Neither is set by add_commonlibsse_plugin.
+set(PROJECT_FRIENDLY_NAME "Sure of Stealing")
+
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_INTERPROCEDURAL_OPTIMIZATION ON)
