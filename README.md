@@ -6,7 +6,7 @@ Reaching for a plate on a table in someone's house, or grabbing loot next to an 
 
 > **This is a maintained fork** of [clayne/SureOfStealing](https://github.com/clayne/SureOfStealing), with crash fixes and updated Skyrim support. See [Changes in this fork](#changes-in-this-fork).
 
-<!-- TODO: add link to the Nexus Mods page -->
+**[Download on Nexus Mods](https://www.nexusmods.com/skyrimspecialedition/mods/178413)**
 
 ## What it does
 
