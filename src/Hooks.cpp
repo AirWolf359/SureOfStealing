@@ -17,10 +17,11 @@ namespace Hooks
         stl::write_vfunc<RE::TESFlora, ActivateFlora>();
         logger::info("Installed TESFlora::Activate hook");
 
-        if (Settings::chairs_and_benches) {
-            stl::write_vfunc<RE::TESFurniture, ActivateFurniture>();
-            logger::info("Installed TESFurniture::Activate hook");
-        }
+        // Installed unconditionally: a vfunc hook cannot be safely removed at
+        // runtime, so the setting is checked inside the thunk instead. This lets
+        // bChairsAndBenches be toggled while the game is running.
+        stl::write_vfunc<RE::TESFurniture, ActivateFurniture>();
+        logger::info("Installed TESFurniture::Activate hook (bChairsAndBenches = {})", Settings::chairs_and_benches);
 
         stl::write_vfunc<RE::TESObjectCONT, ActivateContainer>();
         logger::info("Installed TESObjectCONT::Activate hook");
@@ -142,6 +143,10 @@ namespace Hooks
     bool ActivateFurniture::Thunk(RE::TESFurniture* a_this, RE::TESObjectREFR* a_targetRef, RE::TESObjectREFR* a_activatorRef, std::uint8_t a_arg3, RE::TESBoundObject* a_object,
                                   std::int32_t a_targetCount) noexcept
     {
+        if (!Settings::chairs_and_benches) {
+            return func(a_this, a_targetRef, a_activatorRef, a_arg3, a_object, a_targetCount);
+        }
+
         if (!a_targetRef || !a_activatorRef) {
             return func(a_this, a_targetRef, a_activatorRef, a_arg3, a_object, a_targetCount);
         }
