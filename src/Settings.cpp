@@ -37,8 +37,8 @@ void Settings::LoadSettings() noexcept
     double_tap_while_sneaking = ini.GetBoolValue("General", "bDoubleTapWhileSneaking", false);
 
     logger::info("Loaded settings");
-    logger::info("\tbChairsAndBenches = {}", chairs_and_benches);
-    logger::info("\tbRequireSneakToSteal = {}", require_sneak_to_steal);
-    logger::info("\tbDoubleTapWhileSneaking = {}", double_tap_while_sneaking);
+    logger::info("\tbChairsAndBenches = {}", chairs_and_benches.load());
+    logger::info("\tbRequireSneakToSteal = {}", require_sneak_to_steal.load());
+    logger::info("\tbDoubleTapWhileSneaking = {}", double_tap_while_sneaking.load());
     logger::info("");
 }
