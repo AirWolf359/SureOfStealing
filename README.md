@@ -61,11 +61,20 @@ Logs are written to `Documents/My Games/Skyrim Special Edition/SKSE/SureOfSteali
 
 ### Immersive Interactions
 
-If **Immersive Interactions** is installed, this plugin **requires** the accompanying patch:
+If **Immersive Interactions** is installed, this plugin **requires** a patch:
 
 > `Sure of Stealing - Immersive Interactions Patch.esp`
 
-Without it the plugin will refuse to load and report an error, because it needs the patch's global to coordinate with Immersive Interactions. If you do not use Immersive Interactions, the patch is not needed.
+The patch supplies a global variable the plugin uses to signal when it is holding an interaction back, so the two mods do not fight over the same activation. Without the patch, the game closes during startup with a message box naming it. If you do not use Immersive Interactions, no patch is needed.
+
+**Two different versions of this patch exist, and they share the same filename.**
+
+| If you use | Take the patch from |
+| --- | --- |
+| Immersive Interactions | the Sure of Stealing mod page |
+| Immersive Interactions **and** First Person Interactions | First Person Interactions, which bundles its own version |
+
+Because the filenames are identical, installing both means one silently overwrites the other. This plugin only checks the filename, so it loads whichever won the conflict and reports no error. If you use First Person Interactions, make sure its version is the one that wins, or its handling is lost with no warning.
 
 ### Skyrim VR and Physical Sneak
 
