@@ -87,6 +87,15 @@ public:
         return false;
     }
 
+    // Refuses the interaction outright without arming it. Used by bRequireSneak,
+    // where standing up is not a state that a second interaction can confirm, so
+    // there is nothing worth remembering.
+    static void RefusePendingInteraction(RE::TESObjectREFR* a_ref, std::string_view a_action) noexcept
+    {
+        logger::debug("Refusing {} for {} (0x{:x}) - not sneaking", a_action, a_ref->GetName(), a_ref->GetFormID());
+        SetImmersiveInteractions(1.0f);
+    }
+
     // Arms a_ref so the next interaction on it counts as confirmation. The caller
     // blocks this one, by whichever means suits its hook.
     static void ArmPendingInteraction(RE::TESObjectREFR* a_ref, std::string_view a_action) noexcept

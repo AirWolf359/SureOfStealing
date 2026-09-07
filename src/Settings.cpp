@@ -18,7 +18,12 @@ void Settings::LoadSettings() noexcept
 
     chairs_and_benches = ini.GetBoolValue("General", "bChairsAndBenches");
 
+    // Default passed explicitly so behaviour does not depend on the library's
+    // own default for a key that an existing ini will not contain.
+    require_sneak = ini.GetBoolValue("General", "bRequireSneak", false);
+
     logger::info("Loaded settings");
     logger::info("\tbChairsAndBenches = {}", chairs_and_benches);
+    logger::info("\tbRequireSneak = {}", require_sneak);
     logger::info("");
 }

@@ -45,6 +45,11 @@ namespace Hooks
                 if (!crosshair || crosshair->GetFormID() != form_id) {
                     return func(a_this, a_object, a_count, a_arg3, a_playSound);
                 }
+                if (Settings::require_sneak) {
+                    Utility::RefusePendingInteraction(a_object, "steal"sv);
+
+                    return;
+                }
                 if (Utility::ConsumeRepeatInteraction(a_object, "steal"sv)) {
                     return func(a_this, a_object, a_count, a_arg3, a_playSound);
                 }
@@ -80,6 +85,11 @@ namespace Hooks
         if (const auto player{ RE::PlayerCharacter::GetSingleton() }; a_activatorRef->IsPlayerRef()) {
             if (player->Is3DLoaded() && !player->IsSneaking()) {
                 if (a_targetRef->IsCrimeToActivate()) {
+                    if (Settings::require_sneak) {
+                        Utility::RefusePendingInteraction(a_targetRef, "steal"sv);
+
+                        return func(a_this, nullptr, a_activatorRef, a_arg3, a_object, 0);
+                    }
                     if (Utility::ConsumeRepeatInteraction(a_targetRef, "steal"sv)) {
                         return func(a_this, a_targetRef, a_activatorRef, a_arg3, a_object, a_targetCount);
                     }
@@ -168,6 +178,15 @@ namespace Hooks
                         logger::debug("Skipping confirmation for empty container {} (0x{:x})", a_targetRef->GetName(), a_targetRef->GetFormID());
 
                         return func(a_this, a_targetRef, a_activatorRef, a_arg3, a_object, a_targetCount);
+                    }
+
+                    // Placed after the empty-container check: an empty container
+                    // holds nothing to steal, so refusing it would be friction
+                    // without purpose even when sneaking is required.
+                    if (Settings::require_sneak) {
+                        Utility::RefusePendingInteraction(a_targetRef, "activation"sv);
+
+                        return false;
                     }
 
                     Utility::ArmPendingInteraction(a_targetRef, "activation"sv);
