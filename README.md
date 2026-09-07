@@ -21,7 +21,7 @@ This applies to:
 
 There are some deliberate exemptions, so the plugin stays out of the way:
 
-- **Sneaking bypasses the check entirely** — if you are sneaking, a single interaction takes the item. Sneaking is treated as intent to steal.
+- **Sneaking bypasses the check** — by default a single interaction takes the item, since sneaking is treated as intent to steal. This can be turned off with `bDoubleTapWhileSneaking`, or made mandatory with `bRequireSneakToSteal`.
 - **Unread books** pass straight through, so reading is never interrupted.
 - **Empty containers** pass straight through.
 - The item must be **under your crosshair**, so the check never fires on something you are not looking at.
@@ -45,6 +45,8 @@ Settings live in `Data/SKSE/Plugins/SureOfStealing.ini`:
 ```ini
 [General]
 bChairsAndBenches = true
+bRequireSneakToSteal = false
+bDoubleTapWhileSneaking = false
 
 [Log]
 Debug = true
@@ -53,7 +55,22 @@ Debug = true
 | Setting | Default | Description |
 | --- | --- | --- |
 | `bChairsAndBenches` | `true` | Also require two interactions before sitting on a chair or bench. |
+| `bRequireSneakToSteal` | `false` | Refuse to take owned items at all unless you are sneaking, rather than asking for a second interaction. Applies to stealing only, never to sitting. |
+| `bDoubleTapWhileSneaking` | `false` | Require the second interaction while sneaking as well, so sneaking no longer bypasses confirmation. Unlike the setting above, this also covers chairs and benches. |
 | `Debug` | `true` | Write verbose logging to the SKSE log. Useful when reporting a problem. |
+
+### Sneak behaviour
+
+The two sneak settings control standing and sneaking independently, giving four modes:
+
+| `bRequireSneakToSteal` | `bDoubleTapWhileSneaking` | Standing | Sneaking |
+| --- | --- | --- | --- |
+| `false` | `false` | Two interactions | One interaction *(default)* |
+| `true` | `false` | Cannot steal at all | One interaction |
+| `false` | `true` | Two interactions | Two interactions |
+| `true` | `true` | Cannot steal at all | Two interactions |
+
+Empty containers open on the first interaction in every mode, since there is nothing to steal.
 
 Logs are written to `Documents/My Games/Skyrim Special Edition/SKSE/SureOfStealing.log` (or the VR equivalent).
 
@@ -84,7 +101,9 @@ Opening the container itself still requires confirmation as normal, including wh
 
 ### Skyrim VR and Physical Sneak
 
-Because sneaking bypasses the check, VR users who enable the game's **Physical Sneak** setting should be aware that physically crouching — for example bending down to reach a low shelf — puts you in sneak, which allows an item to be taken on a single grab. If you rely on this plugin to prevent accidental theft, consider that interaction before enabling Physical Sneak.
+Because sneaking bypasses the check by default, VR users who enable the game's **Physical Sneak** setting should be aware that physically crouching — for example bending down to reach a low shelf — puts you in sneak, which allows an item to be taken on a single grab.
+
+If that is a problem for you, set `bDoubleTapWhileSneaking = true`. Confirmation is then required whether you are standing or crouched, so an incidental crouch no longer lets anything be taken without it.
 
 ## Changes in this fork
 
