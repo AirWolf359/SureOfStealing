@@ -7,7 +7,20 @@ void Settings::LoadSettings() noexcept
     CSimpleIniA ini;
 
     ini.SetUnicode();
-    ini.LoadFile(R"(.\Data\SKSE\Plugins\SureOfStealing.ini)");
+
+    // The primary ini ships with the mod and is never written to, so a mod
+    // manager keeps ownership of it and a mod update replaces it cleanly.
+    if (ini.LoadFile(R"(.\Data\SKSE\Plugins\SureOfStealing.ini)") < 0) {
+        logger::warn("Could not read SureOfStealing.ini, falling back to defaults");
+    }
+
+    // A supplemental file, if the user creates one, is layered on top: keys it
+    // defines win, keys it leaves out fall through to the primary. LoadFile
+    // merges into the existing data rather than resetting it, and CSimpleIniA
+    // does not allow duplicate keys, so loading second is what makes it win.
+    if (ini.LoadFile(R"(.\Data\SKSE\Plugins\SureOfStealingCustom.ini)") >= 0) {
+        logger::info("Applied overrides from SureOfStealingCustom.ini");
+    }
 
     debug_logging = ini.GetBoolValue("Log", "Debug");
 
