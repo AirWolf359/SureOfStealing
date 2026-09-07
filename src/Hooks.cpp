@@ -159,6 +159,11 @@ namespace Hooks
                     RE::BSString activate_text;
                     a_this->GetActivateText(a_targetRef, activate_text);
 
+                    // The empty-container exemption matches on display text, which
+                    // UI mods and localisation both rewrite. Logged so a container
+                    // that should be exempt but is not can actually be diagnosed.
+                    logger::debug("Activate text for {} is '{}'", a_targetRef->GetName(), activate_text.c_str());
+
                     if (std::string_view(activate_text.c_str()).contains("Empty")) {
                         return func(a_this, a_targetRef, a_activatorRef, a_arg3, a_object, a_targetCount);
                     }
