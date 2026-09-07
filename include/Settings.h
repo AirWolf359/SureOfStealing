@@ -8,4 +8,6 @@ public:
     inline static bool debug_logging{};
 
     inline static bool chairs_and_benches{};
+
+    inline static bool require_sneak{};
 };
