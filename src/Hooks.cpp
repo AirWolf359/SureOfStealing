@@ -33,7 +33,9 @@ namespace Hooks
             return func(a_this, a_object, a_count, a_arg3, a_playSound);
         }
 
-        if (a_this->Is3DLoaded() && !a_this->IsSneaking()) {
+        const auto sneaking{ a_this->IsSneaking() };
+
+        if (a_this->Is3DLoaded() && (!sneaking || Settings::double_tap_while_sneaking)) {
             const auto form_id{ a_object->GetFormID() };
             if (a_object->IsCrimeToActivate()) {
                 // Skip unread books
@@ -45,7 +47,7 @@ namespace Hooks
                 if (!crosshair || crosshair->GetFormID() != form_id) {
                     return func(a_this, a_object, a_count, a_arg3, a_playSound);
                 }
-                if (Settings::require_sneak) {
+                if (!sneaking && Settings::require_sneak_to_steal) {
                     Utility::RefusePendingInteraction(a_object, "steal"sv);
 
                     return;
@@ -58,7 +60,7 @@ namespace Hooks
                 return;
             }
         }
-        else if (a_this->Is3DLoaded() && a_this->IsSneaking() && Utility::last_activation.get()) {
+        else if (a_this->Is3DLoaded() && sneaking && Utility::last_activation.get()) {
             Utility::ClearPendingActivation();
 
             return func(a_this, a_object, a_count, a_arg3, a_playSound);
@@ -83,9 +85,11 @@ namespace Hooks
         }
 
         if (const auto player{ RE::PlayerCharacter::GetSingleton() }; a_activatorRef->IsPlayerRef()) {
-            if (player->Is3DLoaded() && !player->IsSneaking()) {
+            const auto sneaking{ player->IsSneaking() };
+
+            if (player->Is3DLoaded() && (!sneaking || Settings::double_tap_while_sneaking)) {
                 if (a_targetRef->IsCrimeToActivate()) {
-                    if (Settings::require_sneak) {
+                    if (!sneaking && Settings::require_sneak_to_steal) {
                         Utility::RefusePendingInteraction(a_targetRef, "steal"sv);
 
                         return func(a_this, nullptr, a_activatorRef, a_arg3, a_object, 0);
@@ -98,7 +102,7 @@ namespace Hooks
                     return func(a_this, nullptr, a_activatorRef, a_arg3, a_object, 0);
                 }
             }
-            else if (player->Is3DLoaded() && player->IsSneaking() && Utility::last_activation.get()) {
+            else if (player->Is3DLoaded() && sneaking && Utility::last_activation.get()) {
                 Utility::ClearPendingActivation();
 
                 return func(a_this, a_targetRef, a_activatorRef, a_arg3, a_object, a_targetCount);
@@ -128,9 +132,11 @@ namespace Hooks
         }
 
         if (const auto player{ RE::PlayerCharacter::GetSingleton() }; a_activatorRef->IsPlayerRef()) {
+            const auto sneaking{ player->IsSneaking() };
+
             // Sitting is not a crime, so unlike the other hooks there is no
             // IsCrimeToActivate check: every chair and bench is confirmed.
-            if (player->Is3DLoaded() && !player->IsSneaking()) {
+            if (player->Is3DLoaded() && (!sneaking || Settings::double_tap_while_sneaking)) {
                 if (Utility::ConsumeRepeatInteraction(a_targetRef, "sitting"sv)) {
                     return func(a_this, a_targetRef, a_activatorRef, a_arg3, a_object, a_targetCount);
                 }
@@ -138,7 +144,7 @@ namespace Hooks
 
                 return false;
             }
-            if (player->Is3DLoaded() && player->IsSneaking() && Utility::last_activation.get()) {
+            if (player->Is3DLoaded() && sneaking && Utility::last_activation.get()) {
                 Utility::ClearPendingActivation();
 
                 return func(a_this, a_targetRef, a_activatorRef, a_arg3, a_object, a_targetCount);
@@ -158,7 +164,9 @@ namespace Hooks
         }
 
         if (const auto player{ RE::PlayerCharacter::GetSingleton() }; a_activatorRef->IsPlayerRef()) {
-            if (player->Is3DLoaded() && !player->IsSneaking()) {
+            const auto sneaking{ player->IsSneaking() };
+
+            if (player->Is3DLoaded() && (!sneaking || Settings::double_tap_while_sneaking)) {
                 if (a_targetRef->IsCrimeToActivate()) {
                     if (Utility::ConsumeRepeatInteraction(a_targetRef, "activation"sv)) {
                         return func(a_this, a_targetRef, a_activatorRef, a_arg3, a_object, a_targetCount);
@@ -183,7 +191,7 @@ namespace Hooks
                     // Placed after the empty-container check: an empty container
                     // holds nothing to steal, so refusing it would be friction
                     // without purpose even when sneaking is required.
-                    if (Settings::require_sneak) {
+                    if (!sneaking && Settings::require_sneak_to_steal) {
                         Utility::RefusePendingInteraction(a_targetRef, "activation"sv);
 
                         return false;
@@ -194,7 +202,7 @@ namespace Hooks
                     return false;
                 }
             }
-            else if (player->Is3DLoaded() && player->IsSneaking() && Utility::last_activation.get()) {
+            else if (player->Is3DLoaded() && sneaking && Utility::last_activation.get()) {
                 Utility::ClearPendingActivation();
 
                 return func(a_this, a_targetRef, a_activatorRef, a_arg3, a_object, a_targetCount);
