@@ -5,6 +5,10 @@ class Settings : public Singleton<Settings>
 public:
     static void LoadSettings() noexcept;
 
+    // Writes the current values to the supplemental ini. The primary is never
+    // written, so a mod update can replace it without losing user choices.
+    static void Save() noexcept;
+
     // Atomic because these are read from the hook thunks, which the game
     // dispatches across worker threads - interaction logging showed a different
     // thread almost every time - while the planned in-game menu will write them
