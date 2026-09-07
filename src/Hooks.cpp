@@ -137,6 +137,15 @@ namespace Hooks
             // Sitting is not a crime, so unlike the other hooks there is no
             // IsCrimeToActivate check: every chair and bench is confirmed.
             if (player->Is3DLoaded() && (!sneaking || Settings::double_tap_while_sneaking)) {
+                // Confirming by pressing twice does not help someone who holds
+                // activate down to loot a table, since the repeat satisfies it by
+                // itself. Requiring sneak instead cannot be triggered by accident,
+                // while still leaving sitting possible for the quests that need it.
+                if (!sneaking && Settings::require_sneak_to_sit) {
+                    Utility::RefusePendingInteraction(a_targetRef, "sitting"sv);
+
+                    return false;
+                }
                 if (Utility::ConsumeRepeatInteraction(a_targetRef, "sitting"sv)) {
                     return func(a_this, a_targetRef, a_activatorRef, a_arg3, a_object, a_targetCount);
                 }

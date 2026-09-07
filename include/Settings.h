@@ -19,6 +19,8 @@ public:
 
     inline static std::atomic<bool> chairs_and_benches{};
 
+    inline static std::atomic<bool> require_sneak_to_sit{};
+
     inline static std::atomic<bool> require_sneak_to_steal{};
 
     inline static std::atomic<bool> double_tap_while_sneaking{};

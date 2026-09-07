@@ -53,6 +53,14 @@ namespace UI
         changed |= Toggle("Chairs and benches", Settings::chairs_and_benches,
                           "Also require a second interaction before sitting on a chair or bench.");
 
+        // Only has any effect while the master switch above is on, so it is
+        // greyed out rather than left looking as though it does nothing.
+        ImGuiMCP::BeginDisabled(!Settings::chairs_and_benches.load());
+        changed |= Toggle("Require sneak to sit", Settings::require_sneak_to_sit,
+                          "Refuse to sit while standing, rather than asking for a second interaction. "
+                          "Sneak to sit instead. Needs \"Chairs and benches\" above.");
+        ImGuiMCP::EndDisabled();
+
         changed |= Toggle("Require sneak to steal", Settings::require_sneak_to_steal,
                           "Refuse to take owned items unless you are sneaking, rather than asking for a "
                           "second interaction. Applies to stealing only, never to sitting.");
