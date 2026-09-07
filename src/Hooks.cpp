@@ -154,17 +154,19 @@ namespace Hooks
                         return func(a_this, a_targetRef, a_activatorRef, a_arg3, a_object, a_targetCount);
                     }
 
-                    // Checked after the confirmation above, so a container that is
-                    // already armed still opens on its second interaction.
-                    RE::BSString activate_text;
-                    a_this->GetActivateText(a_targetRef, activate_text);
+                    // An empty container has nothing to steal, so requiring
+                    // confirmation for it is just friction. Checked after the
+                    // confirmation above, so a container that is already armed
+                    // still opens on its second interaction.
+                    //
+                    // Tested against the real inventory rather than the activation
+                    // prompt. The prompt is display text: UI mods rewrite it - one
+                    // was observed replacing it with Scaleform markup containing no
+                    // readable words at all - localisation translates it, and it
+                    // also wrongly matched any container merely named "Empty".
+                    if (a_targetRef->GetInventoryItemCount() == 0) {
+                        logger::debug("Skipping confirmation for empty container {} (0x{:x})", a_targetRef->GetName(), a_targetRef->GetFormID());
 
-                    // The empty-container exemption matches on display text, which
-                    // UI mods and localisation both rewrite. Logged so a container
-                    // that should be exempt but is not can actually be diagnosed.
-                    logger::debug("Activate text for {} is '{}'", a_targetRef->GetName(), activate_text.c_str());
-
-                    if (std::string_view(activate_text.c_str()).contains("Empty")) {
                         return func(a_this, a_targetRef, a_activatorRef, a_arg3, a_object, a_targetCount);
                     }
 
