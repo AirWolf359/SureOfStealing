@@ -72,6 +72,21 @@ The two sneak settings control standing and sneaking independently, giving four 
 
 Empty containers open on the first interaction in every mode, since there is nothing to steal.
 
+### Overriding settings without editing the ini
+
+The plugin never writes to `SureOfStealing.ini`, and you do not have to either. Create this file instead:
+
+> `Data/SKSE/Plugins/SureOfStealingCustom.ini`
+
+Any key it defines overrides the primary; anything it leaves out falls through. Include only the settings you want to change:
+
+```ini
+[General]
+bDoubleTapWhileSneaking = true
+```
+
+This keeps your preferences separate from the file the mod ships. A mod update replaces the primary cleanly without touching your settings, and your mod manager does not report the mod's own files as modified. It follows the same convention as Engine Fixes and its `EngineFixesCustom.toml`.
+
 Logs are written to `Documents/My Games/Skyrim Special Edition/SKSE/SureOfStealing.log` (or the VR equivalent).
 
 ## Compatibility
