@@ -87,7 +87,7 @@ public:
         return false;
     }
 
-    // Refuses the interaction outright without arming it. Used by bRequireSneak,
+    // Refuses the interaction outright without arming it. Used by bRequireSneakToSteal,
     // where standing up is not a state that a second interaction can confirm, so
     // there is nothing worth remembering.
     static void RefusePendingInteraction(RE::TESObjectREFR* a_ref, std::string_view a_action) noexcept

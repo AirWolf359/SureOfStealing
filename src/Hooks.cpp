@@ -47,7 +47,7 @@ namespace Hooks
                 if (!crosshair || crosshair->GetFormID() != form_id) {
                     return func(a_this, a_object, a_count, a_arg3, a_playSound);
                 }
-                if (!sneaking && Settings::require_sneak) {
+                if (!sneaking && Settings::require_sneak_to_steal) {
                     Utility::RefusePendingInteraction(a_object, "steal"sv);
 
                     return;
@@ -89,7 +89,7 @@ namespace Hooks
 
             if (player->Is3DLoaded() && (!sneaking || Settings::double_tap_while_sneaking)) {
                 if (a_targetRef->IsCrimeToActivate()) {
-                    if (!sneaking && Settings::require_sneak) {
+                    if (!sneaking && Settings::require_sneak_to_steal) {
                         Utility::RefusePendingInteraction(a_targetRef, "steal"sv);
 
                         return func(a_this, nullptr, a_activatorRef, a_arg3, a_object, 0);
@@ -191,7 +191,7 @@ namespace Hooks
                     // Placed after the empty-container check: an empty container
                     // holds nothing to steal, so refusing it would be friction
                     // without purpose even when sneaking is required.
-                    if (!sneaking && Settings::require_sneak) {
+                    if (!sneaking && Settings::require_sneak_to_steal) {
                         Utility::RefusePendingInteraction(a_targetRef, "activation"sv);
 
                         return false;
