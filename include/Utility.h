@@ -10,18 +10,36 @@ public:
 
     static void InitGlobal() noexcept
     {
-        if (const auto handler{ RE::TESDataHandler::GetSingleton() }; handler->LookupModByName("ImmersiveInteractions.esp"sv)) {
-            immersive_interactions_present = true;
-            logger::info("Immersive Interactions compatibility enabled");
-            if (!handler->LookupModByName("Sure of Stealing - Immersive Interactions Patch.esp"sv)) {
-                logger::error("Immersive Interactions patch not found");
-                stl::report_and_fail("ERROR: Sure of Stealing - Immersive Interactions Patch not installed"sv);
-            }
-            immersive_interactions_global = handler->LookupForm<RE::TESGlobal>(0x800, "Sure of Stealing - Immersive Interactions Patch.esp"sv);
-            logger::info("Cached Immersive Interactions global: {} ({})", immersive_interactions_global->GetFormEditorID(), immersive_interactions_global->value);
+        const auto handler{ RE::TESDataHandler::GetSingleton() };
+        if (!handler || !handler->LookupModByName("ImmersiveInteractions.esp"sv)) {
+            logger::info("Immersive Interactions not present");
+
             return;
         }
-        logger::info("Immersive Interactions not present");
+
+        logger::info("Immersive Interactions detected");
+
+        if (!handler->LookupModByName("Sure of Stealing - Immersive Interactions Patch.esp"sv)) {
+            logger::error("Immersive Interactions patch not found");
+            stl::report_and_fail("ERROR: Sure of Stealing - Immersive Interactions Patch not installed"sv);
+        }
+
+        // Two different patches ship under this filename, one on the Sure of
+        // Stealing page and one bundled with First Person Interactions, so the
+        // global is looked up rather than assumed. Without this check a patch
+        // that renumbered the form would be a null dereference on the next line.
+        immersive_interactions_global = handler->LookupForm<RE::TESGlobal>(0x800, "Sure of Stealing - Immersive Interactions Patch.esp"sv);
+        if (!immersive_interactions_global) {
+            logger::error("Immersive Interactions patch is loaded but global 0x800 was not found");
+            stl::report_and_fail("ERROR: Sure of Stealing - Immersive Interactions Patch is installed but its global could not be read. The patch may be an incompatible version."sv);
+        }
+
+        // Set last, and only once the global is known good: every hook reads this
+        // flag before dereferencing the global, so it must never be true while the
+        // pointer is null.
+        immersive_interactions_present = true;
+        logger::info("Immersive Interactions compatibility enabled");
+        logger::info("Cached Immersive Interactions global: {} ({})", immersive_interactions_global->GetFormEditorID(), immersive_interactions_global->value);
     }
 
     // No-op when Immersive Interactions is not installed, in which case the
