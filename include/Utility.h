@@ -23,6 +23,60 @@ public:
         }
         logger::info("Immersive Interactions not present");
     }
+
+    // No-op when Immersive Interactions is not installed, in which case the
+    // global was never looked up.
+    static void SetImmersiveInteractions(float a_value) noexcept
+    {
+        if (immersive_interactions_present) {
+            immersive_interactions_global->value = a_value;
+        }
+    }
+
+    // Restores the "not stealing" state on a pass-through, leaving any value the
+    // caller has deliberately set this frame alone.
+    static void ResetImmersiveInteractions() noexcept
+    {
+        if (immersive_interactions_present && immersive_interactions_global->value == 0.0f) {
+            immersive_interactions_global->value = 1.0f;
+        }
+    }
+
+    // Drops a pending first interaction. Used when the player is sneaking, which
+    // bypasses confirmation entirely.
+    static void ClearPendingActivation() noexcept
+    {
+        last_activation = {};
+        SetImmersiveInteractions(1.0f);
+    }
+
+    // True when a_ref is the reference armed by a previous interaction: this is
+    // the confirming second interaction, so the pending state is consumed and the
+    // caller should let the action through. Returns false without side effects
+    // when there is nothing pending, or it was for a different reference.
+    static bool ConsumeRepeatInteraction(RE::TESObjectREFR* a_ref, std::string_view a_action) noexcept
+    {
+        if (const auto last_ref = last_activation.get(); last_ref) {
+            if (a_ref->GetFormID() == last_ref->GetFormID()) {
+                logger::debug("Allowing {} for {} (0x{:x})", a_action, a_ref->GetName(), a_ref->GetFormID());
+                SetImmersiveInteractions(0.0f);
+                last_activation = {};
+
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    // Arms a_ref so the next interaction on it counts as confirmation. The caller
+    // blocks this one, by whichever means suits its hook.
+    static void ArmPendingInteraction(RE::TESObjectREFR* a_ref, std::string_view a_action) noexcept
+    {
+        logger::debug("Blocking {} for {} (0x{:x})", a_action, a_ref->GetName(), a_ref->GetFormID());
+        last_activation = a_ref->GetHandle();
+        SetImmersiveInteractions(1.0f);
+    }
 };
 
 class CrosshairRefHandler : public EventSingleton<CrosshairRefHandler, SKSE::CrosshairRefEvent>

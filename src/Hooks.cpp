@@ -34,7 +34,6 @@ namespace Hooks
         }
 
         if (a_this->Is3DLoaded() && !a_this->IsSneaking()) {
-            const auto name{ a_object->GetName() };
             const auto form_id{ a_object->GetFormID() };
             if (a_object->IsCrimeToActivate()) {
                 // Skip unread books
@@ -46,40 +45,21 @@ namespace Hooks
                 if (!crosshair || crosshair->GetFormID() != form_id) {
                     return func(a_this, a_object, a_count, a_arg3, a_playSound);
                 }
-                if (const auto last_ref = Utility::last_activation.get(); last_ref) {
-                    if (a_object->GetFormID() == last_ref->GetFormID()) {
-                        logger::debug("Allowing steal for {} (0x{:x})", name, form_id);
-                        if (Utility::immersive_interactions_present) {
-                            Utility::immersive_interactions_global->value = 0.0f;
-                        }
-                        Utility::last_activation = {};
-
-                        return func(a_this, a_object, a_count, a_arg3, a_playSound);
-                    }
+                if (Utility::ConsumeRepeatInteraction(a_object, "steal"sv)) {
+                    return func(a_this, a_object, a_count, a_arg3, a_playSound);
                 }
-                logger::debug("Blocking steal for {} (0x{:x})", name, form_id);
-                Utility::last_activation = a_object->GetHandle();
-                if (Utility::immersive_interactions_present) {
-                    Utility::immersive_interactions_global->value = 1.0f;
-                }
+                Utility::ArmPendingInteraction(a_object, "steal"sv);
 
                 return;
             }
         }
         else if (a_this->Is3DLoaded() && a_this->IsSneaking() && Utility::last_activation.get()) {
-            Utility::last_activation = {};
-            if (Utility::immersive_interactions_present) {
-                Utility::immersive_interactions_global->value = 1.0f;
-            }
+            Utility::ClearPendingActivation();
 
             return func(a_this, a_object, a_count, a_arg3, a_playSound);
         }
 
-        if (Utility::immersive_interactions_present) {
-            if (Utility::immersive_interactions_global->value == 0.0f) {
-                Utility::immersive_interactions_global->value = 1.0f;
-            }
-        }
+        Utility::ResetImmersiveInteractions();
 
         return func(a_this, a_object, a_count, a_arg3, a_playSound);
     }
@@ -99,42 +79,22 @@ namespace Hooks
 
         if (const auto player{ RE::PlayerCharacter::GetSingleton() }; a_activatorRef->IsPlayerRef()) {
             if (player->Is3DLoaded() && !player->IsSneaking()) {
-                const auto form_id{ a_targetRef->GetFormID() };
                 if (a_targetRef->IsCrimeToActivate()) {
-                    if (const auto last_ref = Utility::last_activation.get(); last_ref) {
-                        if (form_id == last_ref->GetFormID()) {
-                            logger::debug("Allowing steal for {} (0x{:x})", name, form_id);
-                            if (Utility::immersive_interactions_present) {
-                                Utility::immersive_interactions_global->value = 0.0f;
-                            }
-                            Utility::last_activation = {};
-
-                            return func(a_this, a_targetRef, a_activatorRef, a_arg3, a_object, a_targetCount);
-                        }
+                    if (Utility::ConsumeRepeatInteraction(a_targetRef, "steal"sv)) {
+                        return func(a_this, a_targetRef, a_activatorRef, a_arg3, a_object, a_targetCount);
                     }
-                    logger::debug("Blocking steal for {} (0x{:x})", name, form_id);
-                    Utility::last_activation = a_targetRef->GetHandle();
-                    if (Utility::immersive_interactions_present) {
-                        Utility::immersive_interactions_global->value = 1.0f;
-                    }
+                    Utility::ArmPendingInteraction(a_targetRef, "steal"sv);
 
                     return func(a_this, nullptr, a_activatorRef, a_arg3, a_object, 0);
                 }
             }
             else if (player->Is3DLoaded() && player->IsSneaking() && Utility::last_activation.get()) {
-                Utility::last_activation = {};
-                if (Utility::immersive_interactions_present) {
-                    Utility::immersive_interactions_global->value = 1.0f;
-                }
+                Utility::ClearPendingActivation();
 
                 return func(a_this, a_targetRef, a_activatorRef, a_arg3, a_object, a_targetCount);
             }
 
-            if (Utility::immersive_interactions_present) {
-                if (Utility::immersive_interactions_global->value == 0.0f) {
-                    Utility::immersive_interactions_global->value = 1.0f;
-                }
-            }
+            Utility::ResetImmersiveInteractions();
         }
 
         return func(a_this, a_targetRef, a_activatorRef, a_arg3, a_object, a_targetCount);
@@ -158,41 +118,23 @@ namespace Hooks
         }
 
         if (const auto player{ RE::PlayerCharacter::GetSingleton() }; a_activatorRef->IsPlayerRef()) {
+            // Sitting is not a crime, so unlike the other hooks there is no
+            // IsCrimeToActivate check: every chair and bench is confirmed.
             if (player->Is3DLoaded() && !player->IsSneaking()) {
-                const auto form_id{ a_targetRef->GetFormID() };
-                if (const auto last_ref = Utility::last_activation.get(); last_ref) {
-                    if (form_id == last_ref->GetFormID()) {
-                        logger::debug("Allowing player to sit on {} (0x{:x})", name, form_id);
-                        if (Utility::immersive_interactions_present) {
-                            Utility::immersive_interactions_global->value = 0.0f;
-                        }
-                        Utility::last_activation = {};
-
-                        return func(a_this, a_targetRef, a_activatorRef, a_arg3, a_object, a_targetCount);
-                    }
+                if (Utility::ConsumeRepeatInteraction(a_targetRef, "sitting"sv)) {
+                    return func(a_this, a_targetRef, a_activatorRef, a_arg3, a_object, a_targetCount);
                 }
-                logger::debug("Blocking player from sitting on {} (0x{:x})", name, form_id);
-                Utility::last_activation = a_targetRef->GetHandle();
-                if (Utility::immersive_interactions_present) {
-                    Utility::immersive_interactions_global->value = 1.0f;
-                }
+                Utility::ArmPendingInteraction(a_targetRef, "sitting"sv);
 
                 return false;
             }
             if (player->Is3DLoaded() && player->IsSneaking() && Utility::last_activation.get()) {
-                Utility::last_activation = {};
-                if (Utility::immersive_interactions_present) {
-                    Utility::immersive_interactions_global->value = 1.0f;
-                }
+                Utility::ClearPendingActivation();
 
                 return func(a_this, a_targetRef, a_activatorRef, a_arg3, a_object, a_targetCount);
             }
 
-            if (Utility::immersive_interactions_present) {
-                if (Utility::immersive_interactions_global->value == 0.0f) {
-                    Utility::immersive_interactions_global->value = 1.0f;
-                }
-            }
+            Utility::ResetImmersiveInteractions();
         }
 
         return func(a_this, a_targetRef, a_activatorRef, a_arg3, a_object, a_targetCount);
@@ -207,20 +149,13 @@ namespace Hooks
 
         if (const auto player{ RE::PlayerCharacter::GetSingleton() }; a_activatorRef->IsPlayerRef()) {
             if (player->Is3DLoaded() && !player->IsSneaking()) {
-                const auto name{ a_targetRef->GetName() };
-                const auto form_id{ a_targetRef->GetFormID() };
                 if (a_targetRef->IsCrimeToActivate()) {
-                    if (const auto last_ref = Utility::last_activation.get(); last_ref) {
-                        if (form_id == last_ref->GetFormID()) {
-                            logger::debug("Allowing player to activate {} (0x{:x})", name, form_id);
-                            if (Utility::immersive_interactions_present) {
-                                Utility::immersive_interactions_global->value = 0.0f;
-                            }
-                            Utility::last_activation = {};
-
-                            return func(a_this, a_targetRef, a_activatorRef, a_arg3, a_object, a_targetCount);
-                        }
+                    if (Utility::ConsumeRepeatInteraction(a_targetRef, "activation"sv)) {
+                        return func(a_this, a_targetRef, a_activatorRef, a_arg3, a_object, a_targetCount);
                     }
+
+                    // Checked after the confirmation above, so a container that is
+                    // already armed still opens on its second interaction.
                     RE::BSString activate_text;
                     a_this->GetActivateText(a_targetRef, activate_text);
 
@@ -228,29 +163,18 @@ namespace Hooks
                         return func(a_this, a_targetRef, a_activatorRef, a_arg3, a_object, a_targetCount);
                     }
 
-                    logger::debug("Blocking player from activating {} (0x{:x})", name, form_id);
-                    Utility::last_activation = a_targetRef->GetHandle();
-                    if (Utility::immersive_interactions_present) {
-                        Utility::immersive_interactions_global->value = 1.0f;
-                    }
+                    Utility::ArmPendingInteraction(a_targetRef, "activation"sv);
 
                     return false;
                 }
             }
             else if (player->Is3DLoaded() && player->IsSneaking() && Utility::last_activation.get()) {
-                Utility::last_activation = {};
-                if (Utility::immersive_interactions_present) {
-                    Utility::immersive_interactions_global->value = 1.0f;
-                }
+                Utility::ClearPendingActivation();
 
                 return func(a_this, a_targetRef, a_activatorRef, a_arg3, a_object, a_targetCount);
             }
 
-            if (Utility::immersive_interactions_present) {
-                if (Utility::immersive_interactions_global->value == 0.0f) {
-                    Utility::immersive_interactions_global->value = 1.0f;
-                }
-            }
+            Utility::ResetImmersiveInteractions();
         }
 
         return func(a_this, a_targetRef, a_activatorRef, a_arg3, a_object, a_targetCount);
