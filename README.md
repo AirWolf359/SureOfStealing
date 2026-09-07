@@ -32,7 +32,7 @@ There are some deliberate exemptions, so the plugin stays out of the way:
 - [SKSE64](https://skse.silverlock.org/) (or SKSEVR for Skyrim VR)
 - [Address Library for SKSE Plugins](https://www.nexusmods.com/skyrimspecialedition/mods/32444) (VR users: the VR variant)
 
-Optionally, [SKSE Menu Framework](https://github.com/QTR-Modding/SKSE-Menu-Framework-3) adds an in-game settings menu. It is not required: without it the mod behaves identically and settings are read from the ini as usual.
+Optionally, [SKSE Menu Framework](https://www.nexusmods.com/skyrimspecialedition/mods/120352) adds an in-game settings menu. It is not required: without it the mod behaves identically and settings are read from the ini as usual.
 
 Built with [CommonLibSSE-NG](https://github.com/alandtse/CommonLibVR), so a single DLL supports SE, AE and VR.
 
