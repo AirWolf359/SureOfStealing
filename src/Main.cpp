@@ -22,7 +22,12 @@ SKSEPluginLoad(const SKSE::LoadInterface* skse)
 
     logger::info("{} {} is loading...", plugin->GetName(), version);
 
-    Init(skse);
+    // Pass false so CommonLibSSE does not initialise logging itself. Its
+    // Init() otherwise calls log::init(), which installs its own default
+    // logger and pattern, reopens the log file - discarding anything logged
+    // before this point - and sets flush_on(info) in release builds, leaving
+    // every debug line stranded in an unflushed buffer.
+    Init(skse, false);
 
     if (const auto messaging = SKSE::GetMessagingInterface(); !messaging->RegisterListener(Listener)) {
         return false;
