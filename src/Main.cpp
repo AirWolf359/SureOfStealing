@@ -1,6 +1,7 @@
 #include "Hooks.h"
 #include "Logging.h"
 #include "Settings.h"
+#include "UI.h"
 #include "Utility.h"
 
 void Listener(SKSE::MessagingInterface::Message* message) noexcept
@@ -10,6 +11,7 @@ void Listener(SKSE::MessagingInterface::Message* message) noexcept
         Utility::InitGlobal();
         CrosshairRefHandler::Register();
         Hooks::Install();
+        UI::Register();
     }
 }
 

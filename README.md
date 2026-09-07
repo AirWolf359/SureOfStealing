@@ -32,6 +32,8 @@ There are some deliberate exemptions, so the plugin stays out of the way:
 - [SKSE64](https://skse.silverlock.org/) (or SKSEVR for Skyrim VR)
 - [Address Library for SKSE Plugins](https://www.nexusmods.com/skyrimspecialedition/mods/32444) (VR users: the VR variant)
 
+Optionally, [SKSE Menu Framework](https://github.com/QTR-Modding/SKSE-Menu-Framework-3) adds an in-game settings menu. It is not required: without it the mod behaves identically and settings are read from the ini as usual.
+
 Built with [CommonLibSSE-NG](https://github.com/alandtse/CommonLibVR), so a single DLL supports SE, AE and VR.
 
 ## Installation
@@ -71,6 +73,14 @@ The two sneak settings control standing and sneaking independently, giving four 
 | `true` | `true` | Cannot steal at all | Two interactions |
 
 Empty containers open on the first interaction in every mode, since there is nothing to steal.
+
+### In-game settings menu
+
+With **SKSE Menu Framework** installed, everything above can be changed while playing. Open the framework's menu and look for the **Sure of Stealing** section.
+
+Changes apply immediately, with no reload, and are written to `SureOfStealingCustom.ini` so they persist. The ini shipped with the mod is never modified.
+
+Without the framework there is simply no menu, and the mod is configured by editing the ini as described below.
 
 ### Overriding settings without editing the ini
 
