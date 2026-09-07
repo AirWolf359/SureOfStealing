@@ -132,6 +132,15 @@ namespace Hooks
         }
 
         if (const auto player{ RE::PlayerCharacter::GetSingleton() }; a_activatorRef->IsPlayerRef()) {
+            // Standing up with the activate key comes through this same hook.
+            // Getting out of a chair needs no confirming - the point is to stop
+            // sitting down by accident - and refusing it would leave the player
+            // stuck in the seat, since sneaking is not possible while seated.
+            // Standing up by moving never reaches this hook at all.
+            if (player->IsSitting()) {
+                return func(a_this, a_targetRef, a_activatorRef, a_arg3, a_object, a_targetCount);
+            }
+
             const auto sneaking{ player->IsSneaking() };
 
             // Sitting is not a crime, so unlike the other hooks there is no
