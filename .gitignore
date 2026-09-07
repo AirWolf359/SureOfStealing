@@ -4,3 +4,4 @@ build
 .idea
 contrib/Plugin*
 .vscode/
+.codegraph/
