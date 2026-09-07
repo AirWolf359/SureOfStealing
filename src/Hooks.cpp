@@ -132,11 +132,17 @@ namespace Hooks
         }
 
         if (const auto player{ RE::PlayerCharacter::GetSingleton() }; a_activatorRef->IsPlayerRef()) {
-            // Standing up with the activate key comes through this same hook.
-            // Getting out of a chair needs no confirming - the point is to stop
-            // sitting down by accident - and refusing it would leave the player
-            // stuck in the seat, since sneaking is not possible while seated.
-            // Standing up by moving never reaches this hook at all.
+            // Standing up comes through this same hook. Moving forward to get out
+            // of a chair activates the furniture; it is not a separate path. Getting
+            // out needs no confirming, since the point is to stop sitting down by
+            // accident, and refusing it strands the player in the seat because
+            // sneaking is not possible while seated.
+            //
+            // Under the two-interaction default this went unnoticed: holding the
+            // movement key repeats the activation, so the first arms the chair and
+            // the next consumes it within a frame or two. That is the same reason a
+            // repeated press cannot protect anyone who habitually holds or mashes
+            // the activate key, which is what bRequireSneakToSit exists to address.
             if (player->IsSitting()) {
                 return func(a_this, a_targetRef, a_activatorRef, a_arg3, a_object, a_targetCount);
             }
