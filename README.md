@@ -76,6 +76,12 @@ The patch supplies a global variable the plugin uses to signal when it is holdin
 
 Because the filenames are identical, installing both means one silently overwrites the other. This plugin only checks the filename, so it loads whichever won the conflict and reports no error. If you use First Person Interactions, make sure its version is the one that wins, or its handling is lost with no warning.
 
+### Container loot menus
+
+Mods that let you take items directly from a container's loot preview, such as QuickLoot and its variants, bypass the container check. Nothing activates the container in that case: items move straight out of its inventory, so this plugin never sees the interaction.
+
+Opening the container itself still requires confirmation as normal, including when opened from one of those mods. It is only taking items without opening it that is unaffected.
+
 ### Skyrim VR and Physical Sneak
 
 Because sneaking bypasses the check, VR users who enable the game's **Physical Sneak** setting should be aware that physically crouching — for example bending down to reach a low shelf — puts you in sneak, which allows an item to be taken on a single grab. If you rely on this plugin to prevent accidental theft, consider that interaction before enabling Physical Sneak.
