@@ -21,7 +21,7 @@ namespace Hooks
         // runtime, so the setting is checked inside the thunk instead. This lets
         // bChairsAndBenches be toggled while the game is running.
         stl::write_vfunc<RE::TESFurniture, ActivateFurniture>();
-        logger::info("Installed TESFurniture::Activate hook (bChairsAndBenches = {})", Settings::chairs_and_benches);
+        logger::info("Installed TESFurniture::Activate hook (bChairsAndBenches = {})", Settings::chairs_and_benches.load());
 
         stl::write_vfunc<RE::TESObjectCONT, ActivateContainer>();
         logger::info("Installed TESObjectCONT::Activate hook");
