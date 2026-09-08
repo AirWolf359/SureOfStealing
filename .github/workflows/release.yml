@@ -100,5 +100,5 @@ jobs:
             gh release upload $version $archive $symbols --clobber
           } else {
             Write-Host "Creating release $version."
-            gh release create $version $archive $symbols --title "Sure of Stealing $version" --generate-notes
+            gh release create $version $archive $symbols --title "Sure of Stealing Expanded $version" --generate-notes
           }
