@@ -143,15 +143,12 @@ namespace Hooks
             // the next consumes it within a frame or two. That is the same reason a
             // repeated press cannot protect anyone who habitually holds or mashes
             // the activate key, which is what bRequireSneakToSit exists to address.
-            // TEMPORARY DIAGNOSTIC - not for merge.
-            logger::debug("Furniture activation: sitSleepState={} IsSitting={} occupied={:x}",
-                          static_cast<std::uint32_t>(player->GetSitSleepState()),
-                          player->IsSitting(),
-                          player->GetOccupiedFurniture() ? player->GetOccupiedFurniture().get()->GetFormID() : 0u);
-
-            if (player->IsSitting()) {
-                logger::debug("Passing furniture activation through: already seated");
-
+            //
+            // Occupied furniture is what identifies a seated player. ActorState's
+            // sitSleepState was tried first and is not usable: it reads 11 whether
+            // the player is seated or standing, which is not even a value the enum
+            // defines, so IsSitting() built on top of it is always false.
+            if (player->GetOccupiedFurniture()) {
                 return func(a_this, a_targetRef, a_activatorRef, a_arg3, a_object, a_targetCount);
             }
 
