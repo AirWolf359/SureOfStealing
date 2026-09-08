@@ -47,6 +47,7 @@ Settings live in `Data/SKSE/Plugins/SureOfStealing.ini`:
 ```ini
 [General]
 bChairsAndBenches = true
+bRequireSneakToSit = false
 bRequireSneakToSteal = false
 bDoubleTapWhileSneaking = false
 
@@ -57,6 +58,7 @@ Debug = true
 | Setting | Default | Description |
 | --- | --- | --- |
 | `bChairsAndBenches` | `true` | Also require two interactions before sitting on a chair or bench. |
+| `bRequireSneakToSit` | `false` | Refuse to sit while standing, rather than asking for a second interaction. Sneak to sit. Only has an effect while `bChairsAndBenches` is enabled. |
 | `bRequireSneakToSteal` | `false` | Refuse to take owned items at all unless you are sneaking, rather than asking for a second interaction. Applies to stealing only, never to sitting. |
 | `bDoubleTapWhileSneaking` | `false` | Require the second interaction while sneaking as well, so sneaking no longer bypasses confirmation. Unlike the setting above, this also covers chairs and benches. |
 | `Debug` | `true` | Write verbose logging to the SKSE log. Useful when reporting a problem. |
@@ -73,6 +75,17 @@ The two sneak settings control standing and sneaking independently, giving four 
 | `true` | `true` | Cannot steal at all | Two interactions |
 
 Empty containers open on the first interaction in every mode, since there is nothing to steal.
+
+Sitting works the same way, controlled by `bRequireSneakToSit`, and applies only while `bChairsAndBenches` is enabled:
+
+| `bRequireSneakToSit` | `bDoubleTapWhileSneaking` | Standing | Sneaking |
+| --- | --- | --- | --- |
+| `false` | `false` | Two interactions | One interaction *(default)* |
+| `true` | `false` | Cannot sit | One interaction |
+| `false` | `true` | Two interactions | Two interactions |
+| `true` | `true` | Cannot sit | Two interactions |
+
+Requiring sneak is worth knowing about if you hold or repeatedly press the activate key to loot quickly: a repeated press satisfies the second-interaction check by itself, so it cannot protect you, whereas sneaking cannot be triggered by accident. Sitting stays possible either way, which quests that need you to sit down still depend on.
 
 ### In-game settings menu
 

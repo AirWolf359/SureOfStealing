@@ -41,11 +41,13 @@ void Settings::LoadSettings() noexcept
 
     // Default passed explicitly so behaviour does not depend on the library's
     // own default for a key that an existing ini will not contain.
+    require_sneak_to_sit = ini.GetBoolValue("General", "bRequireSneakToSit", false);
     require_sneak_to_steal = ini.GetBoolValue("General", "bRequireSneakToSteal", false);
     double_tap_while_sneaking = ini.GetBoolValue("General", "bDoubleTapWhileSneaking", false);
 
     logger::info("Loaded settings");
     logger::info("\tbChairsAndBenches = {}", chairs_and_benches.load());
+    logger::info("\tbRequireSneakToSit = {}", require_sneak_to_sit.load());
     logger::info("\tbRequireSneakToSteal = {}", require_sneak_to_steal.load());
     logger::info("\tbDoubleTapWhileSneaking = {}", double_tap_while_sneaking.load());
     logger::info("");
@@ -62,6 +64,7 @@ void Settings::Save() noexcept
     ini.LoadFile(supplemental_ini);
 
     ini.SetBoolValue("General", "bChairsAndBenches", chairs_and_benches.load());
+    ini.SetBoolValue("General", "bRequireSneakToSit", require_sneak_to_sit.load());
     ini.SetBoolValue("General", "bRequireSneakToSteal", require_sneak_to_steal.load());
     ini.SetBoolValue("General", "bDoubleTapWhileSneaking", double_tap_while_sneaking.load());
     ini.SetBoolValue("Log", "Debug", debug_logging.load());

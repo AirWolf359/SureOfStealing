@@ -132,11 +132,40 @@ namespace Hooks
         }
 
         if (const auto player{ RE::PlayerCharacter::GetSingleton() }; a_activatorRef->IsPlayerRef()) {
+            // Standing up comes through this same hook. Moving forward to get out
+            // of a chair activates the furniture; it is not a separate path. Getting
+            // out needs no confirming, since the point is to stop sitting down by
+            // accident, and refusing it strands the player in the seat because
+            // sneaking is not possible while seated.
+            //
+            // Under the two-interaction default this went unnoticed: holding the
+            // movement key repeats the activation, so the first arms the chair and
+            // the next consumes it within a frame or two. That is the same reason a
+            // repeated press cannot protect anyone who habitually holds or mashes
+            // the activate key, which is what bRequireSneakToSit exists to address.
+            //
+            // Occupied furniture is what identifies a seated player. ActorState's
+            // sitSleepState was tried first and is not usable: it reads 11 whether
+            // the player is seated or standing, which is not even a value the enum
+            // defines, so IsSitting() built on top of it is always false.
+            if (player->GetOccupiedFurniture()) {
+                return func(a_this, a_targetRef, a_activatorRef, a_arg3, a_object, a_targetCount);
+            }
+
             const auto sneaking{ player->IsSneaking() };
 
             // Sitting is not a crime, so unlike the other hooks there is no
             // IsCrimeToActivate check: every chair and bench is confirmed.
             if (player->Is3DLoaded() && (!sneaking || Settings::double_tap_while_sneaking)) {
+                // Confirming by pressing twice does not help someone who holds
+                // activate down to loot a table, since the repeat satisfies it by
+                // itself. Requiring sneak instead cannot be triggered by accident,
+                // while still leaving sitting possible for the quests that need it.
+                if (!sneaking && Settings::require_sneak_to_sit) {
+                    Utility::RefusePendingInteraction(a_targetRef, "sitting"sv);
+
+                    return false;
+                }
                 if (Utility::ConsumeRepeatInteraction(a_targetRef, "sitting"sv)) {
                     return func(a_this, a_targetRef, a_activatorRef, a_arg3, a_object, a_targetCount);
                 }
