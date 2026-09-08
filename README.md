@@ -52,7 +52,7 @@ bRequireSneakToSteal = false
 bDoubleTapWhileSneaking = false
 
 [Log]
-Debug = true
+Debug = false
 ```
 
 | Setting | Default | Description |
@@ -61,7 +61,7 @@ Debug = true
 | `bRequireSneakToSit` | `false` | Refuse to sit while standing, rather than asking for a second interaction. Sneak to sit. Only has an effect while `bChairsAndBenches` is enabled. |
 | `bRequireSneakToSteal` | `false` | Refuse to take owned items at all unless you are sneaking, rather than asking for a second interaction. Applies to stealing only, never to sitting. |
 | `bDoubleTapWhileSneaking` | `false` | Require the second interaction while sneaking as well, so sneaking no longer bypasses confirmation. Unlike the setting above, this also covers chairs and benches. |
-| `Debug` | `true` | Write verbose logging to the SKSE log. Useful when reporting a problem. |
+| `Debug` | `false` | Write verbose logging to the SKSE log. Turn it on when reporting a problem; the in-game menu applies it immediately, without a restart. |
 
 ### Sneak behaviour
 
