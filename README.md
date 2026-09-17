@@ -1,8 +1,8 @@
-# Sure of Stealing
+# Sure of Stealing Expanded
 
 An [SKSE](https://skse.silverlock.org/) plugin for Skyrim that stops you stealing things by accident.
 
-Reaching for a plate on a table in someone's house, or grabbing loot next to an owned barrel, is an easy way to pick up a bounty you never intended. Sure of Stealing makes taking an owned item deliberate: the first interaction is ignored, and a second interaction on the same item goes through.
+Reaching for a plate on a table in someone's house, or grabbing loot next to an owned barrel, is an easy way to pick up a bounty you never intended. This mod makes taking an owned item deliberate: the first interaction is ignored, and a second interaction on the same item goes through.
 
 > **This is a maintained fork** of [clayne/SureOfStealing](https://github.com/clayne/SureOfStealing), with crash fixes and updated Skyrim support. See [Changes in this fork](#changes-in-this-fork).
 
@@ -52,7 +52,7 @@ bRequireSneakToSteal = false
 bDoubleTapWhileSneaking = false
 
 [Log]
-Debug = true
+Debug = false
 ```
 
 | Setting | Default | Description |
@@ -61,7 +61,7 @@ Debug = true
 | `bRequireSneakToSit` | `false` | Refuse to sit while standing, rather than asking for a second interaction. Sneak to sit. Only has an effect while `bChairsAndBenches` is enabled. |
 | `bRequireSneakToSteal` | `false` | Refuse to take owned items at all unless you are sneaking, rather than asking for a second interaction. Applies to stealing only, never to sitting. |
 | `bDoubleTapWhileSneaking` | `false` | Require the second interaction while sneaking as well, so sneaking no longer bypasses confirmation. Unlike the setting above, this also covers chairs and benches. |
-| `Debug` | `true` | Write verbose logging to the SKSE log. Useful when reporting a problem. |
+| `Debug` | `false` | Write verbose logging to the SKSE log. Turn it on when reporting a problem; the in-game menu applies it immediately, without a restart. |
 
 ### Sneak behaviour
 
@@ -89,7 +89,7 @@ Requiring sneak is worth knowing about if you hold or repeatedly press the activ
 
 ### In-game settings menu
 
-With **SKSE Menu Framework** installed, everything above can be changed while playing. Open the framework's menu and look for the **Sure of Stealing** section.
+With **SKSE Menu Framework** installed, everything above can be changed while playing. Open the framework's menu and look for the **Sure of Stealing Expanded** section.
 
 Changes apply immediately, with no reload, and are written to `SureOfStealingCustom.ini` so they persist. The ini shipped with the mod is never modified.
 
@@ -126,7 +126,7 @@ The patch supplies a global variable the plugin uses to signal when it is holdin
 
 | If you use | Take the patch from |
 | --- | --- |
-| Immersive Interactions | the Sure of Stealing mod page |
+| Immersive Interactions | the original Sure of Stealing mod page |
 | Immersive Interactions **and** First Person Interactions | First Person Interactions, which bundles its own version |
 
 Because the filenames are identical, installing both means one silently overwrites the other. This plugin only checks the filename, so it loads whichever won the conflict and reports no error. If you use First Person Interactions, make sure its version is the one that wins, or its handling is lost with no warning.

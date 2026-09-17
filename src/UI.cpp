@@ -36,7 +36,7 @@ namespace UI
             return;
         }
 
-        SKSEMenuFramework::SetSection("Sure of Stealing");
+        SKSEMenuFramework::SetSection("Sure of Stealing Expanded");
         SKSEMenuFramework::AddSectionItem("Settings", RenderSettings);
         logger::info("Registered in-game settings menu");
     }

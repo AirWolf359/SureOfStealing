@@ -30,7 +30,7 @@ void Settings::LoadSettings() noexcept
         logger::info("Applied overrides from SureOfStealingCustom.ini");
     }
 
-    debug_logging = ini.GetBoolValue("Log", "Debug");
+    debug_logging = ini.GetBoolValue("Log", "Debug", false);
 
     if (debug_logging) {
         spdlog::set_level(spdlog::level::debug);
